@@ -1,0 +1,9 @@
+database:
+  host: "localhost"
+  port: 5433
+  user: "postgres"
+  password: "postgres"
+  name: "microservices_db"
+
+server:
+  grpc_port: ":50052"

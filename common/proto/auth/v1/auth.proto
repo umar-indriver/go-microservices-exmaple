@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package auth.v1;
+
+option go_package = "github.com/microservices/common/auth/v1;authv1";
+
+message GetJWKSRequest {}
+
+message GetJWKSResponse {
+  string jwks_json = 1;
+}
+
+message GetUserProfileRequest {
+  string user_id = 1;
+}
+
+message GetUserProfileResponse {
+  string user_id = 1;
+  string email = 2;
+  string name = 3;
+  string role = 4;
+}
+
+service AuthService {
+  rpc GetJWKS(GetJWKSRequest) returns (GetJWKSResponse);
+  rpc GetUserProfile(GetUserProfileRequest) returns (GetUserProfileResponse);
+}

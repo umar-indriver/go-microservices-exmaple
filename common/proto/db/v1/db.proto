@@ -1,0 +1,86 @@
+syntax = "proto3";
+
+package db.v1;
+
+option go_package = "github.com/microservices/common/db/v1;dbv1";
+
+message CreateUserRequest {
+  string email = 1;
+  string password = 2;
+  string name = 3;
+  string role = 4;
+}
+
+message CreateUserResponse {
+  string id = 1;
+  string email = 2;
+  string name = 3;
+  string role = 4;
+  string created_at = 5;
+}
+
+message GetUserByEmailRequest {
+  string email = 1;
+}
+
+message GetUserByEmailResponse {
+  string id = 1;
+  string email = 2;
+  string password_hash = 3;
+  string name = 4;
+  string role = 5;
+  string created_at = 6;
+}
+
+message GetUserByIDRequest {
+  string id = 1;
+}
+
+message GetUserByIDResponse {
+  string id = 1;
+  string email = 2;
+  string name = 3;
+  string role = 4;
+  string created_at = 5;
+}
+
+message SaveRefreshTokenRequest {
+  string user_id = 1;
+  string token_hash = 2;
+  string expires_at = 3;
+}
+
+message SaveRefreshTokenResponse {
+  string id = 1;
+}
+
+message GetRefreshTokenRequest {
+  string token_hash = 1;
+}
+
+message GetRefreshTokenResponse {
+  string id = 1;
+  string user_id = 2;
+  string token_hash = 3;
+  string expires_at = 4;
+  bool revoked = 5;
+}
+
+message RevokeRefreshTokenRequest {
+  string token_hash = 1;
+  string user_id = 2;
+}
+
+message RevokeRefreshTokenResponse {
+  bool success = 1;
+}
+
+service DbService {
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+  rpc GetUserByEmail(GetUserByEmailRequest) returns (GetUserByEmailResponse);
+  rpc GetUserByID(GetUserByIDRequest) returns (GetUserByIDResponse);
+  
+  rpc SaveRefreshToken(SaveRefreshTokenRequest) returns (SaveRefreshTokenResponse);
+  rpc GetRefreshToken(GetRefreshTokenRequest) returns (GetRefreshTokenResponse);
+  rpc RevokeRefreshToken(RevokeRefreshTokenRequest) returns (RevokeRefreshTokenResponse);
+}

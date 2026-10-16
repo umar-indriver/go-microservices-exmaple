@@ -1,0 +1,7 @@
+server:
+  http_port: ":8082"
+
+services:
+  auth_http_url: "http://localhost:8081"
+  auth_grpc_addr: "localhost:50051"
+  redis_addr: "localhost:6379"

@@ -1,0 +1,258 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-7890-abcd-1234567890ab",
+		"name": "Go Microservices Ed25519 Dual-Token API Collection",
+		"description": "Postman Collection for testing Go Multi-Microservices Platform with Ed25519 (EdDSA) signing, Access Tokens, Refresh Tokens, Renewal, Logout, and Protected Service.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Register User (Auth Service)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"if (jsonData.tokens) {",
+							"    pm.environment.set('access_token', jsonData.tokens.access_token);",
+							"    pm.environment.set('refresh_token', jsonData.tokens.refresh_token);",
+							"    pm.collectionVariables.set('access_token', jsonData.tokens.access_token);",
+							"    pm.collectionVariables.set('refresh_token', jsonData.tokens.refresh_token);",
+							"    console.log('Access & Refresh tokens saved automatically');",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"john.eddsa@example.com\",\n  \"password\": \"SecretPassword123!\",\n  \"name\": \"John EdDSA\",\n  \"role\": \"admin\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8081/api/v1/auth/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"register"
+					]
+				},
+				"description": "Registers a new user and issues Ed25519 Access Token (15m) + Refresh Token (7d)."
+			},
+			"response": []
+		},
+		{
+			"name": "2. Login User (Auth Service)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"if (jsonData.tokens) {",
+							"    pm.environment.set('access_token', jsonData.tokens.access_token);",
+							"    pm.environment.set('refresh_token', jsonData.tokens.refresh_token);",
+							"    pm.collectionVariables.set('access_token', jsonData.tokens.access_token);",
+							"    pm.collectionVariables.set('refresh_token', jsonData.tokens.refresh_token);",
+							"    console.log('Access & Refresh tokens updated');",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"john.eddsa@example.com\",\n  \"password\": \"SecretPassword123!\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8081/api/v1/auth/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"login"
+					]
+				},
+				"description": "Authenticates credentials and issues new Ed25519 Access Token + Refresh Token pair."
+			},
+			"response": []
+		},
+		{
+			"name": "3. Renew Token Pair (Auth Service)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"if (jsonData.tokens) {",
+							"    pm.environment.set('access_token', jsonData.tokens.access_token);",
+							"    pm.environment.set('refresh_token', jsonData.tokens.refresh_token);",
+							"    pm.collectionVariables.set('access_token', jsonData.tokens.access_token);",
+							"    pm.collectionVariables.set('refresh_token', jsonData.tokens.refresh_token);",
+							"    console.log('Token pair renewed successfully');",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"refresh_token\": \"{{refresh_token}}\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8081/api/v1/auth/renew",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"renew"
+					]
+				},
+				"description": "Exchanges a valid Refresh Token for a fresh Access Token + Refresh Token pair (and revokes the old refresh token)."
+			},
+			"response": []
+		},
+		{
+			"name": "4. Get Ed25519 JWKS Keys (Auth Service)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/.well-known/jwks.json",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						".well-known",
+						"jwks.json"
+					]
+				},
+				"description": "Fetches JSON Web Key Set (JWKS) containing Ed25519 (OKP / EdDSA) public keys."
+			},
+			"response": []
+		},
+		{
+			"name": "5. Access Protected Route (Protected Service)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8082/api/v1/protected/data",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"api",
+						"v1",
+						"protected",
+						"data"
+					]
+				},
+				"description": "Accesses protected route. Protected-service validates the Ed25519 Access Token statelessly using cached JWKS public keys."
+			},
+			"response": []
+		},
+		{
+			"name": "6. Logout / Revoke Token (Auth Service)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"refresh_token\": \"{{refresh_token}}\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8081/api/v1/auth/logout",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"logout"
+					]
+				},
+				"description": "Revokes the refresh token in PostgreSQL via db-service over gRPC."
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "refresh_token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

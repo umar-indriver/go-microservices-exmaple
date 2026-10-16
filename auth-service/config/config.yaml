@@ -1,0 +1,12 @@
+server:
+  http_port: ":8081"
+  grpc_port: ":50051"
+
+services:
+  db_service_addr: "localhost:50052"
+  redis_addr: "localhost:6379"
+
+jwt:
+  issuer: "auth-service"
+  access_expiration_minutes: 15
+  refresh_expiration_days: 7
